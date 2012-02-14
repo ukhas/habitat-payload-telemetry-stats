@@ -25,7 +25,7 @@ div#intro
     margin: 40px auto;
 }
 
-p#totallines_p
+p#totallines_p, p#getstarted
 {
     font-size: 130%;
 }
