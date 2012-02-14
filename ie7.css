@@ -1,0 +1,8 @@
+div#menu div, div.list_go,
+div.list_info, div.list_buttons,
+div#flot,
+div#pie_list_container, div#daily_timeranges
+{
+    zoom: 1;
+    *display:inline;
+}
