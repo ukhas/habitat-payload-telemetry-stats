@@ -1,0 +1,198 @@
+/* Copyright (c) Daniel Richman. GNU GPL 3 */
+
+body
+{
+    font-family: sans-serif;
+}
+
+div#title
+{
+    font-size: 150%;
+    font-weight: bold;
+    text-align: center;
+}
+
+div#loading
+{
+    text-align: center;
+    font-size: 200%;
+    padding: 50px;
+}
+
+div#intro
+{
+    width: 1000px;
+    margin: 40px auto;
+}
+
+p#totallines_p
+{
+    font-size: 130%;
+}
+
+span#totallines
+{
+    font-weight: bold;
+}
+
+div#menu
+{
+    text-align: center;
+    margin: 10px 0;
+}
+
+div#menu div, div.list_go, div#daily_timeranges div
+{
+    text-align: center;
+    display: inline-block;
+    padding: 10px;
+    border: 1px solid blue;
+    background-color: #dff;
+}
+
+div#daily_timeranges div
+{
+    display: block;
+    margin: 5px 0;
+}
+
+div#menu div:hover, div.list_go:hover, div#daily_timeranges div:hover
+{
+    background-color: #0ff;
+}
+
+div#menu div:active, div.list_go:active, div#daily_timeranges div:active
+{
+    background-color: #8f8;
+}
+
+div#flightlist div.list_item
+{
+    margin: 3px auto;
+    border: 1px solid gray;
+    background-color: #eff;
+    text-align: center;
+    width: 800px;
+}
+
+div.list_info, div.list_buttons
+{
+    display: inline-block;
+    width: 350px;
+    vertical-align: middle;
+}
+
+div.list_label
+{
+    font-size: 130%;
+    font-weight: bold;
+    text-align: center;
+}
+
+div.list_go
+{
+    width: 100px;
+    padding: 8px;
+    border: 1px solid gray;
+    margin: 2px;
+}
+
+span.list_id, span.list_timedelta
+{
+    font-size: 70%;
+}
+
+span.list_id
+{
+    font-family: monospace;
+}
+
+div#graph
+{
+    margin: 0 auto;
+    width: 1200px;
+}
+
+div#pie, div#daily, div#flight_id
+{
+    text-align: center;
+}
+
+div#flot
+{
+    display: inline-block;
+    width: 800px;
+    height: 800px;
+}
+
+div#flight_id
+{
+    font-size: 70%;
+    font-family: monospace;
+    margin-bottom: 5px;
+}
+
+div.pie_label
+{
+    color: white;
+    background-color: black;
+    white-space: nowrap;
+    border-radius: 3px;
+    padding: 4px;
+    opacity: 0.8;
+}
+
+div.pie_label_select
+{
+    background-color: blue !important;
+    opacity: 1 !important;
+}
+
+div.pie_label_select div.pie_label_name
+{
+    font-weight: bold;
+}
+
+div.pie_label_info
+{
+    font-size: 70%;
+}
+
+div#pie_list_container, div#daily_timeranges
+{
+    display: inline-block;
+    vertical-align: top;
+    height: 800px;
+    width: 300px;
+}
+
+div#pie_list_container
+{
+    overflow-y: scroll;
+    font-size: 70%;
+}
+
+table#pie_list
+{
+    width: 100%;
+}
+
+tr.pie_list_title td
+{
+    font-weight: bold;
+}
+
+table#pie_list td.pie_list_label
+{
+    width: 200px;
+}
+
+table#pie_list td.pie_list_number
+{
+    text-align: center;
+}
+
+div.pie_label_smaller
+{
+    font-size: 70%;
+}

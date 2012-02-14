@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2012 Daniel Richman; GNU GPL 3 -->
+<html>
+    <head>
+        <title>habitat listener telemetry pretty graphs</title>
+        <!--[if lte IE 8]>
+            <script language="javascript" type="text/javascript"
+             src="lib/excanvas.min.js"></script>
+        <![endif]-->
+        <script type="text/javascript" src="lib/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/jquery.flot.min.js"></script>
+        <script type="text/javascript" src="lib/jquery.flot.pie.min.js"></script>
+        <script type="text/javascript" src="lib/jquery.couch.js"></script>
+        <script type="text/javascript" src="stats.js"></script>
+        <link href="stats.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div id="title">Listener Telemetry Statistics</div>
+        <div id="menu">
+            <div id="menu_list">Flight list</div>
+            <div id="menu_all_pie">Callsign pie for all flights</div>
+            <div id="menu_flight_pie">Flights pie</div>
+            <div id="menu_daily">Daily uploads</div>
+            <div id="menu_pie">Callsign pie <span id="flightname1"></span></div>
+        </div>
+        <div id="intro">
+            <p>
+                So on Sunday I made a quick CouchDB view to list the callsigns that had contributed to tracking each flight. It seemed too
+                easy to combine that with flot and produce pretty graphs, so here it is.
+            </p>
+            <p>
+                It is, however, quick cheap and cheerful, and is certainly no substitute for the things we
+                <a href='https://github.com/ukhas/habitat/issues/117'>have in mind</a> / 
+                <a href='https://github.com/ukhas/habitat/issues/114'>have planned for habitat</a>.
+            </p>
+            <p>
+                Indeed, running with the "release early, release often" strategy means that the database is a little unorganised at the moment.
+                The eventual plan is to have a list of 'flights', and 'testing flights', and some other stuff, and nice date ranges, so that a
+                flight archive is easily browsable. We don't have that yet. Therefore instead, as a little hack, flights below are ordered by
+                'last modified time'.
+            </p>
+            <p>
+                The totals counted here are the number of uploaded strings for each flight - without removing cases where 2 people have uploaded
+                the same string. It's number of telemetry documents uploaded. Note: flight-totals only include lines that successfully parse.
+            </p>
+            <p>
+                Some links:
+                <ul>
+                    <li><a href="https://github.com/ukhas/habitat">habitat @ github</a></li>
+                    <li><a href='http://habitat.habhub.org/'>habitat homepage, docs</a></li>
+                    <li><a href='http://spacenear.us/'>spacenear.us</a></li>
+                    <li><a href='http://ukhas.org.uk/'>UKHAS</a></li>
+                </ul>
+            </p>
+            <p id="totallines_p">
+                Total lines in database: <span id="totallines"></span> <br>
+            </p>
+        </div>
+        <div id="flightlist">
+        </div>
+        <div id="graph">
+            <div id="pie">Pie chart of uploaded strings <span id="flightname3"></span></div>
+            <div id="daily">Uploaded strings, each day</div>
+            <div id="flight_id"></div>
+            <div id="flot"></div>
+            <div id="pie_list_container">
+                <table id="pie_list"></table>
+            </div>
+            <div id="daily_timeranges">
+                <div id="daily_week">Last Week</div>
+                <div id="daily_month">Last Month</div>
+                <div id="daily_fourm">Last 4 Months</div>
+                <div id="daily_year">Last Year</div>
+                <div id="daily_all">All Time</div>
+            </div>
+        </div>
+        <div id="loading">
+            Loading...
+        </div>
+        <div id="error">
+            <div>Something bad happened. Sorry :-(. Refreshing the page might help; no promises.</div>
+            <div id="error_info"></div>
+        </div>
+    </body>
+</html>
