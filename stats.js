@@ -54,10 +54,10 @@ function recent_flights() {
     loading = true;
     flight = false;
 
-    db.view("listener_telemetry_stats/flight-mtimes", {
+    db.view("payload_telemetry_stats/flight-mtimes", {
         success: function (sort_data) {
             if (kill) return;
-            db.view("listener_telemetry_stats/flight-names", {
+            db.view("payload_telemetry_stats/flight-names", {
                 success: function (flight_data) {
                     got_flights(sort_data, flight_data);
                 },
@@ -89,7 +89,7 @@ function flight_pie() {
     reset_ui();
     $("#loading").show();
     loading = true;
-    db.view("listener_telemetry_stats/flight-names", {
+    db.view("payload_telemetry_stats/flight-names", {
         success: function (flight_data) {
             data("callsign-by-flight", 1, got_pie, false, flight_data);
         },
@@ -125,7 +125,7 @@ function data(view, glvl, func, f, arg) {
         opts.startkey = t - arg;
     }
 
-    db.view("listener_telemetry_stats/" + view, opts);
+    db.view("payload_telemetry_stats/" + view, opts);
 }
 
 function got_flights(sort_data, flight_data) {
@@ -427,7 +427,7 @@ $(document).ready(function () {
 
     db = $.couch.db("habitat");
 
-    db.view("listener_telemetry_stats/callsign-all", {
+    db.view("payload_telemetry_stats/callsign-all", {
         reduce: true,
         group: false,
         error: error,

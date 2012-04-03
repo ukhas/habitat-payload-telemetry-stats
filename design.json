@@ -1,5 +1,5 @@
 {
-    "_id": "_design/listener_telemetry_stats", 
+    "_id": "_design/payload_telemetry_stats", 
     "language": "javascript", 
     "views": {
         "callsign-all": {
