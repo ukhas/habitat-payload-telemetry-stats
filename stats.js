@@ -10,7 +10,6 @@ var page = 0;
 var db = null;
 
 function reset_ui() {
-    $("#title").hide();
     $("#intro").hide();
     $("#flightlist").hide();
     $("#flightlist").empty();
@@ -381,7 +380,6 @@ function show_intro(data) {
 
     $("#intro").show();
     $("#menu").show();
-    $("#title").show();
 }
 
 function error(msg) {

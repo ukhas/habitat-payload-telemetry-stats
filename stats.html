@@ -1,92 +1,144 @@
 <!DOCTYPE html>
-<!-- Copyright (c) 2012 Daniel Richman; GNU GPL 3 -->
-<html>
-    <head>
-        <title>habitat listener telemetry pretty graphs</title>
-        <link href="stats.css" rel="stylesheet" type="text/css">
-        <!--[if lte IE 7]>
-            <link href="ie7.css" rel="stylesheet" type="text/css">
-        <![endif]-->
-        <!--[if lte IE 8]>
-            <script language="javascript" type="text/javascript" src="lib/excanvas.min.js"></script>
-        <![endif]-->
-        <script type="text/javascript" src="lib/json2.js"></script>
-        <script type="text/javascript" src="lib/jquery.min.js"></script>
-        <script type="text/javascript" src="lib/jquery.flot.min.js"></script>
-        <script type="text/javascript" src="lib/jquery.flot.pie.min.js"></script>
-        <script type="text/javascript" src="lib/jquery.couch.js"></script>
-        <script type="text/javascript" src="stats.js"></script>
-    </head>
-    <body>
-        <div id="title">Listener Telemetry Statistics</div>
-        <div id="menu">
-            <div id="menu_list">Flight list</div>
-            <div id="menu_all_pie">Callsign pie for all flights</div>
-            <div id="menu_flight_pie">Flights pie</div>
-            <div id="menu_daily">Daily uploads</div>
-            <div id="menu_pie">Callsign pie <span id="flightname1"></span></div>
-        </div>
-        <div id="intro">
-            <p>
-                So on Sunday I made a quick CouchDB view to list the callsigns that had contributed to tracking each flight. It seemed too
-                easy to combine that with flot and produce pretty graphs, so here it is.
-            </p>
-            <p>
-                It is, however, quick cheap and cheerful, and is certainly no substitute for the things we
-                <a href='https://github.com/ukhas/habitat/issues/117'>have in mind</a> / 
-                <a href='https://github.com/ukhas/habitat/issues/114'>have planned for habitat</a>.
-            </p>
-            <p>
-                Indeed, running with the "release early, release often" strategy means that the database is a little unorganised at the moment.
-                The eventual plan is to have a list of 'flights', and 'testing flights', and some other stuff, and nice date ranges, so that a
-                flight archive is easily browsable. We don't have that yet. Therefore instead, as a little hack, flights below are ordered by
-                'last modified time'.
-            </p>
-            <p>
-                The totals counted here are the number of uploaded strings for each flight - without removing cases where 2 people have uploaded
-                the same string. It's number of telemetry documents uploaded. Note: flight-totals only include lines that successfully parse.
-            </p>
-            <p>
-                Some links:
-                <ul>
-                    <li><a href="https://github.com/ukhas/habitat">habitat @ github</a></li>
-                    <li><a href='http://habitat.habhub.org/'>habitat homepage, docs</a></li>
-                    <li><a href='http://spacenear.us/'>spacenear.us</a></li>
-                    <li><a href='http://ukhas.org.uk/'>UKHAS</a></li>
-                    <li><a href='https://github.com/ukhas/habitat-payload-telemetry-stats'>Source code</a></li>
-                </ul>
-            </p>
-            <p id="totallines_p">
-                Total lines in database: <span id="totallines"></span> <br>
-            </p>
-            <p id="getstarted">
-                Click on some of the buttons at the top to get started.
-            </p>
-        </div>
-        <div id="flightlist">
-        </div>
-        <div id="graph">
-            <div id="pie">Pie chart of uploaded strings <span id="flightname3"></span></div>
-            <div id="daily">Uploaded strings, each day</div>
-            <div id="flight_id"></div>
-            <div id="flot"></div>
-            <div id="pie_list_container">
-                <table id="pie_list"></table>
-            </div>
-            <div id="daily_timeranges">
-                <div id="daily_week">Last Week</div>
-                <div id="daily_month">Last Month</div>
-                <div id="daily_fourm">Last 4 Months</div>
-                <div id="daily_year">Last Year</div>
-                <div id="daily_all">All Time</div>
+
+<!-- habitat: payload telemetry stats -->
+<!-- http://habitat.habhub.org -->
+<!-- (C) Copyright 2012; GNU GPL 3-->
+
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8"/>
+    <title>payload telemetry stats - habitat</title>
+    <meta name="description" content="the next generation high altitude balloon tracking system by UKHAS"/>
+    <meta name="author" content="Daniel Richman"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+    <link rel="stylesheet" type="text/css" href="t/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="t/css/skeleton.css" />
+    <link rel="stylesheet" type="text/css" href="t/css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="stats.css" />
+
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if lte IE 7]>
+        <link href="ie7.css" rel="stylesheet" type="text/css" />
+    <![endif]-->
+
+    <!--[if lte IE 8]>
+        <script language="javascript" type="text/javascript" src="lib/excanvas.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="lib/json2.js"></script>
+    <script type="text/javascript" src="lib/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.flot.pie.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.couch.js"></script>
+    <script type="text/javascript" src="stats.js"></script>
+
+    <link rel="shortcut icon" href="t/images/favicon.ico" />
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="sixteen columns">
+                <h1 class="no-margin"><img src="t/images/header_logo.jpg" alt="habitat" title="habitat"/></h1>
+                <span id="app_name"><b>stats</b></span>
             </div>
         </div>
-        <div id="loading">
-            Loading...
+    </header>
+
+    <div id="grey-section">
+        <div class="container">
+            <div class="two-thirds column">
+                <h3 class="remove-bottom" id="page_title">payload telemetry
+                    stats</h3>
+            </div>
         </div>
-        <div id="error">
-            <div>Something bad happened. Sorry :-(. Refreshing the page might help; no promises.</div>
-            <div id="error_info"></div>
+    </div>
+
+    <div id="menu">
+        <div id="menu_list">Flight list</div>
+        <div id="menu_all_pie">Callsign pie for all flights</div>
+        <div id="menu_flight_pie">Flights pie</div>
+        <div id="menu_daily">Daily uploads</div>
+        <div id="menu_pie">Callsign pie <span id="flightname1"></span></div>
+    </div>
+    <div id="intro">
+        <p>
+            So on Sunday I made a quick CouchDB view to list the
+            callsigns that had contributed to tracking each flight. It
+            seemed too easy to combine that with flot and produce
+            pretty graphs, so here it is.
+        </p>
+        <p>
+            It is, however, quick cheap and cheerful, and is certainly
+            no substitute for the things we 
+            <a href='https://github.com/ukhas/habitat/issues/117'>have in mind</a> /
+            <a href='https://github.com/ukhas/habitat/issues/114'>have planned for habitat</a>.
+        </p>
+        <p>
+            Indeed, running with the "release early, release often"
+            strategy means that the database is a little unorganised at
+            the moment.  The eventual plan is to have a list of
+            'flights', and 'testing flights', and some other stuff, and
+            nice date ranges, so that a flight archive is easily
+            browsable. We don't have that yet. Therefore instead, as a
+            little hack, flights below are ordered by 'last modified
+            time'.
+        </p>
+        <p>
+            The totals counted here are the number of uploaded strings
+            for each flight - without removing cases where 2 people
+            have uploaded the same string. It's number of telemetry
+            documents uploaded. Note: flight-totals only include lines
+            that successfully parse.
+        </p>
+        <p>
+            Some links:
+            <ul>
+                <li><a href="https://github.com/ukhas/habitat">habitat @ github</a></li>
+                <li><a href='http://habitat.habhub.org/'>habitat homepage, docs</a></li>
+                <li><a href='http://spacenear.us/'>spacenear.us</a></li>
+                <li><a href='http://ukhas.org.uk/'>UKHAS</a></li>
+                <li><a href='https://github.com/ukhas/habitat-payload-telemetry-stats'>Source code</a></li>
+            </ul>
+        </p>
+        <p id="totallines_p">
+            Total lines in database: <span id="totallines"></span> <br>
+        </p>
+        <p id="getstarted">
+            Click on some of the buttons at the top to get started.
+        </p>
+    </div>
+    <div id="flightlist">
+    </div>
+    <div id="graph">
+        <div id="pie">Pie chart of uploaded strings <span id="flightname3"></span></div>
+        <div id="daily">Uploaded strings, each day</div>
+        <div id="flight_id"></div>
+        <div id="flot"></div>
+        <div id="pie_list_container">
+            <table id="pie_list"></table>
         </div>
-    </body>
+        <div id="daily_timeranges">
+            <div id="daily_week">Last Week</div>
+            <div id="daily_month">Last Month</div>
+            <div id="daily_fourm">Last 4 Months</div>
+            <div id="daily_year">Last Year</div>
+            <div id="daily_all">All Time</div>
+        </div>
+    </div>
+    <div id="loading">
+        Loading...
+    </div>
+    <div id="error">
+        <div>Something bad happened. Sorry :-(. Refreshing the page might help; no promises.</div>
+        <div id="error_info"></div>
+    </div>
+</body>
 </html>
