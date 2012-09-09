@@ -55,7 +55,8 @@ function recent_flights() {
 
     db.view("payload_telemetry_stats/launch_time", {
         success: got_flights,
-        error: error
+        error: error,
+        descending: true
     });
 }
 
@@ -232,6 +233,11 @@ function got_pie(data, type) {
         $("#pie_list").append(e);
     }
 
+    if (serieses.length == 0) {
+        serieses.push({label: 0, data: 0, color: 0});
+        real_labels[0] = "";
+    }
+
     $("#graph").show();
     $("#pie").show();
     $("#pie_list_container").show();
@@ -350,7 +356,7 @@ function show_intro(data) {
     loading = false;
     $("#loading").hide();
 
-    var count = data.rows[0].value;
+    var count = data.rows.length ? data.rows[0].value : 0;
     $("#totallines").text(count);
 
     $("#intro").show();
