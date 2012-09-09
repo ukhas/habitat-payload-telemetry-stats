@@ -53,34 +53,25 @@ function recent_flights() {
     loading = true;
     flight = false;
 
-    db.view("payload_telemetry_stats/flight-mtimes", {
-        success: function (sort_data) {
-            if (kill) return;
-            db.view("payload_telemetry_stats/flight-names", {
-                success: function (flight_data) {
-                    got_flights(sort_data, flight_data);
-                },
-                error: error
-            });
-        },
-        error: error,
-        reduce: true, group: true
+    db.view("payload_telemetry_stats/launch_time", {
+        success: got_flights,
+        error: error
     });
 }
 
 function all_pie() {
     if (kill || loading) return;
-    data("callsign-all", true, got_pie, false, "all");
+    data("receiver", true, got_pie, false, "all");
 }
 
 function pie(f) {
     if (kill || loading) return;
-    data("callsign-by-flight", true, got_pie, f, "normal");
+    data("flight_receiver", true, got_pie, f, "normal");
 }
 
 function daily(max_td) {
     if (kill || loading) return;
-    data("daily-uploads", true, got_daily, false, max_td);
+    data("time_uploaded_day", true, got_daily, false, max_td);
 }
 
 function flight_pie() {
@@ -88,19 +79,24 @@ function flight_pie() {
     reset_ui();
     $("#loading").show();
     loading = true;
-    db.view("payload_telemetry_stats/flight-names", {
+    db.view("payload_telemetry_stats/launch_time", {
         success: function (flight_data) {
-            data("callsign-by-flight", 1, got_pie, false, flight_data);
+            data("flight_receiver", 1, got_pie, false, flight_data);
         },
         error: error
     });
 }
 
-function data(view, glvl, func, f, arg) {
+/* view: view name.
+ * glvl: true for group=true, or group_level value.
+ * func: func to call when data loaded.
+ * _f: flight - if set, calls set_flightname/id and restricts startkey/endkey
+ * arg: argument to pass to func */
+function data(view, glvl, func, _f, arg) {
     reset_ui();
     $("#loading").show();
     loading = true;
-    flight = f;
+    flight = _f;
 
     var opts = {error: error, reduce: true};
     opts.success = function(data) {
@@ -112,14 +108,14 @@ function data(view, glvl, func, f, arg) {
     else
         opts.group_level = glvl;
 
-    if (f) {
-        set_flightname(f.name);
-        set_flightid(f._id);
-        opts.startkey = [f._id, null];
-        opts.endkey = [f._id, {}];
+    if (flight) {
+        set_flightname(flight.name);
+        set_flightid(flight._id);
+        opts.startkey = [flight._id, null];
+        opts.endkey = [flight._id, {}];
     }
 
-    if (view === "daily-uploads" && arg !== null) {
+    if (view === "time_uploaded_day" && arg !== null) {
         var t = Math.floor((new Date()).getTime() / (1000 * 3600 * 24));
         opts.startkey = t - arg;
     }
@@ -127,38 +123,18 @@ function data(view, glvl, func, f, arg) {
     db.view("payload_telemetry_stats/" + view, opts);
 }
 
-function got_flights(sort_data, flight_data) {
+function got_flights(flight_data) {
     if (kill) return;
     loading = false;
     $("#loading").hide();
 
-    // Show flights
-    var sorting = [];
-
-    for (var i = 0; i < sort_data.rows.length; i++) {
-        var row = sort_data.rows[i];
-        sorting.push([row.key, row.value]);
-    }
-
-    sorting.sort(function (a, b) {
-        // sort by mtime descending
-        return (b[1] - a[1]);
-    });
-
     var flights = {};
-
-    for (var i = 0; i < flight_data.rows.length; i++) {
-        var row = flight_data.rows[i];
-        flights[row.id] = {_id: row.id, name: row.value};
-    }
 
     var now = Math.round((new Date()).getTime() / 1000);
 
-    for (var i = 0; i < sorting.length; i++) {
-        var f = flights[sorting[i][0]];
-        if (!f)
-            continue;
-        var mtime = sorting[i][1];
+    for (var i = 0; i < flight_data.rows.length; i++) {
+        var f = flight_data.rows[i].value;
+        f._id = flight_data.rows[i].id;
 
         var diff = Math.round((now - mtime) / (3600 * 24));
         if (diff < 0)
@@ -170,14 +146,14 @@ function got_flights(sort_data, flight_data) {
         var name_elem = $("<div class='list_label' />");
         var extra_elem = $("<div class='list_extra' />");
         var id_elem = $("<span class='list_id' />");
-        var td_elem = $("<span class='list_timedelta' />");
+        var td_elem = $("<span class='list_launchtime' />");
 
         var buttons_elem = $("<div class='list_buttons' />");
         var pie_elem = $("<div class='list_go'>Callsign pie</div>");
 
         name_elem.text(f.name);
         id_elem.text(f._id);
-        td_elem.text(diff + " days ago");
+        td_elem.text(f.launch.time);
 
         (function (f) {
             pie_elem.click(function () {
@@ -201,6 +177,9 @@ function got_flights(sort_data, flight_data) {
     $("#flightlist").show();
 }
 
+/* type is either "all", "normal" or an object: the result of a
+ * launch_times (i.e., flights) view; in which case it's unpacked and then
+ * type becomes "flight" */
 function got_pie(data, type) {
     if (kill) return;
     loading = false;
@@ -210,7 +189,7 @@ function got_pie(data, type) {
     if (type !== "all" && type !== "normal") {
         for (var i = 0; i < type.rows.length; i++) {
             var row = type.rows[i];
-            flight_data[row.key] = row.value;
+            flight_data[row.key] = row.value.name;
         }
 
         type = "flight";
@@ -234,13 +213,13 @@ function got_pie(data, type) {
 
         if (type === "all")
             name = row.key;
-        else
+        else if (type === "normal")
             name = row.key[row.key.length - 1];
-
-        if (type === "flight") {
-            if (!flight_data[name])
+        else if (type === "flight") {
+            var flight_id = row.key[0];
+            if (!flight_data[flight_id])
                 continue;
-            name = flight_data[name];
+            name = flight_data[flight_id].name;
         }
 
         serieses.push({label: i, data: row.value,
@@ -425,7 +404,7 @@ $(document).ready(function () {
 
     db = $.couch.db("habitat");
 
-    db.view("payload_telemetry_stats/callsign-all", {
+    db.view("payload_telemetry_stats/receiver", {
         reduce: true,
         group: false,
         error: error,
