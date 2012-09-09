@@ -87,5 +87,5 @@ def launch_time_map(doc):
 
     if doc['type'] == 'flight' and doc['approved']:
         t = rfc3339_to_timestamp(doc['launch']['time'])
-        d = {"name": doc['name']}
+        d = {"name": doc['name'], "launch": {"time": doc['launch']['time']}}
         yield t, d
