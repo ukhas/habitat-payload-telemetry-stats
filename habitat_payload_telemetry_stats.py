@@ -50,7 +50,7 @@ def flight_receiver_map(doc):
     for callsign in doc['receivers']:
         yield (doc['data']['_parsed']['flight'], callsign), 1
 
-@version(1)
+@version(2)
 def time_uploaded_day_map(doc):
     """
     View: ``payload_telemetry_stats/time_uploaded_day``
