@@ -181,11 +181,11 @@ function got_pie(data, type) {
     loading = false;
     $("#loading").hide();
 
-    var flight_data = {};
+    var flight_names = {};
     if (type !== "all" && type !== "normal") {
         for (var i = 0; i < type.rows.length; i++) {
             var row = type.rows[i];
-            flight_data[row.key] = row.value.name;
+            flight_names[row.id] = row.value.name;
         }
 
         type = "flight";
@@ -213,9 +213,9 @@ function got_pie(data, type) {
             name = row.key[row.key.length - 1];
         else if (type === "flight") {
             var flight_id = row.key[0];
-            if (!flight_data[flight_id])
+            if (!flight_names[flight_id])
                 continue;
-            name = flight_data[flight_id].name;
+            name = flight_names[flight_id].name;
         }
 
         serieses.push({label: i, data: row.value,
