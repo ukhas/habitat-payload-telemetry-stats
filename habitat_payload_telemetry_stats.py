@@ -70,7 +70,7 @@ def time_uploaded_day_map(doc):
 
     for info in doc['receivers'].itervalues():
         t = rfc3339_to_timestamp(info["time_created"])
-        yield (int(t // (3600 * 24)), callsign), 1
+        yield int(t // (3600 * 24)), 1
 
 @version(1)
 def launch_time_map(doc):
