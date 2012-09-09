@@ -136,10 +136,6 @@ function got_flights(flight_data) {
         var f = flight_data.rows[i].value;
         f._id = flight_data.rows[i].id;
 
-        var diff = Math.round((now - mtime) / (3600 * 24));
-        if (diff < 0)
-            diff = 0;
-
         var elem = $("<div class='list_item' />");
         var info_elem = $("<div class='list_info' />");
 
