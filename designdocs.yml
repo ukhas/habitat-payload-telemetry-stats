@@ -1,0 +1,12 @@
+payload_telemetry_stats:
+    views:
+        receiver:
+            map: habitat_payload_telemetry_stats.receiver_map
+            reduce: _sum
+        flight_receiver:
+            map: habitat_payload_telemetry_stats.flight_receiver_map
+            reduce: _sum
+        time_uploaded_day:
+            map: habitat_payload_telemetry_stats.time_uploaded_day_map
+            reduce: _sum
+        launch_time: habitat_payload_telemetry_stats.launch_time_map

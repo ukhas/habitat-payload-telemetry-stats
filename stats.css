@@ -92,7 +92,7 @@ div.list_go
     margin: 2px;
 }
 
-span.list_id, span.list_timedelta
+span.list_id, span.list_launchtime
 {
     font-size: 70%;
 }
