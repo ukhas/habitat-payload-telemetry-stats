@@ -215,7 +215,7 @@ function got_pie(data, type) {
             var flight_id = row.key[0];
             if (!flight_names[flight_id])
                 continue;
-            name = flight_names[flight_id].name;
+            name = flight_names[flight_id];
         }
 
         serieses.push({label: i, data: row.value,
