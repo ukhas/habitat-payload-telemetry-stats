@@ -1,7 +1,7 @@
 # Copyright (c) 2012 Daniel Richman. GNU GPL 3
 # Views for habitat-payload-telemetry-stats
 
-from habitat.utils.rfc3339 import rfc3339_to_timestamp
+from strict_rfc3339 import rfc3339_to_timestamp
 from couch_named_python import version
 
 def _is_flight_telemetry(doc):
